@@ -1,3 +1,5 @@
 class Trade < ApplicationRecord
-  validates :description, presence: true, nullable: false, uniqueness: true
+  has_many :jobs
+  has_many :supplier_trades, through: :suppliers
+  has_many :suppliers, through: :jobs
 end
