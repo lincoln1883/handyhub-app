@@ -10,69 +10,98 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_20_182349) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_09_213154) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "cities", force: :cascade do |t|
     t.string "name"
+    t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "countries_id", null: false
-  end
-
-  create_table "cities_suppliers", id: false, force: :cascade do |t|
-    t.bigint "supplier_id", null: false
-    t.bigint "city_id", null: false
-    t.index %w[supplier_id city_id], name: "index_cities_suppliers_on_supplier_id_and_city_id", unique: true
+    t.index ["country_id"], name: "index_cities_on_country_id"
   end
 
   create_table "countries", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "jobs", force: :cascade do |t|
-    t.text "description"
+    t.bigint "trade_id", null: false
+    t.bigint "city_id", null: false
+    t.string "description"
+    t.float "low_price"
+    t.float "high_price"
+    t.date "expiration_date"
     t.boolean "is_taken"
     t.boolean "is_completed"
-    t.decimal "high_price", precision: 10, scale: 2
-    t.decimal "low_price", precision: 10, scale: 2
-    t.date "expiration_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "customer_id"
+    t.bigint "supplier_id"
+    t.index ["city_id"], name: "index_jobs_on_city_id"
+    t.index ["customer_id"], name: "index_jobs_on_customer_id"
+    t.index ["supplier_id"], name: "index_jobs_on_supplier_id"
+    t.index ["trade_id"], name: "index_jobs_on_trade_id"
   end
 
   create_table "proposals", force: :cascade do |t|
-    t.decimal "price", precision: 10, scale: 2
+    t.bigint "users_id", null: false
+    t.bigint "job_id", null: false
+    t.float "price"
     t.date "expiration_date"
     t.boolean "is_accepted"
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_proposals_on_job_id"
+    t.index ["users_id"], name: "index_proposals_on_users_id"
   end
 
-  create_table "suppliers_trades", id: false, force: :cascade do |t|
-    t.bigint "supplier_id", null: false
-    t.bigint "trade_id", null: false
-    t.index %w[supplier_id trade_id], name: "index_suppliers_trades_on_supplier_id_and_trade_id", unique: true
+  create_table "supplier_cities", force: :cascade do |t|
+    t.bigint "users_id", null: false
+    t.bigint "city_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_supplier_cities_on_city_id"
+    t.index ["users_id"], name: "index_supplier_cities_on_users_id"
+  end
+
+  create_table "supplier_trades", force: :cascade do |t|
+    t.bigint "trades_id", null: false
+    t.bigint "users_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trades_id"], name: "index_supplier_trades_on_trades_id"
+    t.index ["users_id"], name: "index_supplier_trades_on_users_id"
   end
 
   create_table "trades", force: :cascade do |t|
-    t.text "description"
+    t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "password"
-    t.string "phone"
     t.boolean "is_supplier"
     t.boolean "is_active"
+    t.string "name"
+    t.string "phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "cities", "countries"
+  add_foreign_key "jobs", "cities"
+  add_foreign_key "jobs", "trades"
+  add_foreign_key "jobs", "users", column: "customer_id"
+  add_foreign_key "jobs", "users", column: "supplier_id"
+  add_foreign_key "proposals", "jobs"
+  add_foreign_key "proposals", "users", column: "users_id"
+  add_foreign_key "supplier_cities", "cities"
+  add_foreign_key "supplier_cities", "users", column: "users_id"
+  add_foreign_key "supplier_trades", "trades", column: "trades_id"
+  add_foreign_key "supplier_trades", "users", column: "users_id"
 end
