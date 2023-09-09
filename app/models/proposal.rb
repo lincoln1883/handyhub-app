@@ -1,8 +1,8 @@
 class Proposal < ApplicationRecord
-  belongs_to :job, class_name: 'Job', foreign_key: job_id
-  belongs_to :user, class_name: 'User', foreign_key: supplier_id
+  belongs_to :supplier, class_name: 'User', foreign_key: :users_id
+  belongs_to :job
 
-  validates :price, presence: true, nullable: false
-  validates :expiration_date, presence: true, nullable: false
-  validates :is_accepted, presence: true, nullable: false, default: false
+  validates :price, presence: true
+  validates :expiration_date, presence: true
+  validates_presence_of :is_accepted, presence: true, default: false
 end
