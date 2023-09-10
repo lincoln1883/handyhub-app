@@ -1,0 +1,9 @@
+<h1 class="text-center"> User Show</h1>
+
+<div class="flex flex-col">
+  <p><%= @user.name %></p>
+  <p><%= @user.phone %></p>
+  <p><%= @user.is_supplier %></p>
+  <p><%= @user.is_active %></p>
+  <%= button_to 'Delete User', user_path(@user.id), method: :delete %>
+</div>

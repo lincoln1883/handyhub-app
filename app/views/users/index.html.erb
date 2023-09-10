@@ -1,0 +1,6 @@
+<h1 class="text-center">Users Index</h1>
+<% @users.each do |user| %>
+  <div class="flex flex-col">
+    <p> <%= link_to user.name, user_path(user.id) %></p>
+  </div>
+<% end %>
